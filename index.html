@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#0b0e13">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Gelo Edit VP — editor de vídeo web para Android. Corte, velocidade, efeitos, áudio e exportação.">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Gelo Edit VP — Editor de Vídeo</title>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== Barra superior ===== -->
+  <header id="topbar">
+    <div class="brand">
+      <img src="icons/favicon.svg" alt="" class="brand-icon">
+      <div class="brand-text"><strong>Gelo Edit</strong><span>VP</span></div>
+    </div>
+    <div class="top-actions">
+      <button id="btn-import" class="btn btn-ghost" type="button">
+        <svg viewBox="0 0 24 24" class="ic"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        Importar
+      </button>
+      <button id="btn-export" class="btn btn-primary" type="button">
+        <svg viewBox="0 0 24 24" class="ic"><path d="M12 4v12m0 0 4-4m-4 4-4-4M4 20h16"/></svg>
+        Exportar
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Pré-visualização ===== -->
+  <section id="stage">
+    <div id="preview-wrap">
+      <canvas id="preview" width="1280" height="720"></canvas>
+      <div id="empty-state">
+        <div class="empty-card">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24"><path d="M15 10l4.55-2.27A1 1 0 0 1 21 8.62v6.76a1 1 0 0 1-1.45.89L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          </div>
+          <h2>Crie o seu vídeo</h2>
+          <p>Importe vídeos do seu telemóvel para começar a editar. Tudo funciona no navegador — sem computador.</p>
+          <button id="btn-import-2" class="btn btn-primary btn-big" type="button">Importar vídeo</button>
+          <button id="btn-camera" class="btn btn-ghost btn-big" type="button">Gravar com a câmara</button>
+        </div>
+      </div>
+      <div id="export-overlay" class="hidden">
+        <div class="export-badge">● A EXPORTAR</div>
+      </div>
+    </div>
+
+    <!-- ===== Transporte ===== -->
+    <div id="transport">
+      <button id="btn-prev" class="icon-btn" type="button" aria-label="Ir para o início">
+        <svg viewBox="0 0 24 24"><path d="M19 20 9 12l10-8v16zM5 19V5"/></svg>
+      </button>
+      <button id="btn-play" class="icon-btn play" type="button" aria-label="Reproduzir">
+        <svg viewBox="0 0 24 24" id="icon-play"><path d="M8 5v14l11-7z"/></svg>
+        <svg viewBox="0 0 24 24" id="icon-pause" class="hidden"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+      </button>
+      <button id="btn-next" class="icon-btn" type="button" aria-label="Ir para o fim">
+        <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg>
+      </button>
+      <div class="time-display">
+        <span id="time-now">0:00.0</span><span class="time-sep">/</span><span id="time-total">0:00.0</span>
+      </div>
+      <button id="btn-mute" class="icon-btn" type="button" aria-label="Silenciar">
+        <svg viewBox="0 0 24 24" id="icon-vol"><path d="M11 5 6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg>
+        <svg viewBox="0 0 24 24" id="icon-vol-off" class="hidden"><path d="M11 5 6 9H2v6h4l5 4V5zM22 9l-6 6M16 9l6 6"/></svg>
+      </button>
+    </div>
+
+    <!-- ===== Timeline ===== -->
+    <div id="timeline-outer">
+      <div id="timeline-scroll">
+        <div id="timeline-content">
+          <div id="ruler"></div>
+          <div id="track" class="track"></div>
+          <div id="playhead"><div class="playhead-grip"></div><div class="playhead-line"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Painel inferior (ferramentas) ===== -->
+    <section id="dock">
+      <nav id="dock-tabs">
+        <button class="dock-tab active" data-panel="edit" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/></svg>
+          <span>Editar</span>
+        </button>
+        <button class="dock-tab" data-panel="speed" type="button">
+          <svg viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 1 8-8"/><path d="m12 12 4-4"/><path d="M12 4v2"/></svg>
+          <span>Velocidade</span>
+        </button>
+        <button class="dock-tab" data-panel="fx" type="button">
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.7L20 10l-5.4 2.9L13 19l-2.3-5.4L5 12l5.2-2.2zM19 3l.7 2.1L22 6l-2.1 1L19 9l-.8-2L16 6l2.2-.9z"/></svg>
+          <span>Efeitos</span>
+        </button>
+        <button class="dock-tab" data-panel="audio" type="button">
+          <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <span>Áudio</span>
+        </button>
+      </nav>
+
+      <div id="dock-body">
+        <!-- Painel: Editar -->
+        <div class="panel active" id="panel-edit">
+          <div class="panel-pad">
+            <div class="sel-info">
+              <div id="sel-name" class="sel-name">Nenhum clipe selecionado</div>
+              <div id="sel-meta" class="sel-meta">Importe um vídeo e toque num clipe da timeline.</div>
+            </div>
+            <div class="btn-grid">
+              <button id="btn-split" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M12 3v18M6 8 3 12l3 4M18 8l3 4-3 4"/></svg>
+                Dividir aqui
+              </button>
+              <button id="btn-trim-in" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M5 4v16h14M9 4v16"/></svg>
+                Cortar início
+              </button>
+              <button id="btn-trim-out" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M19 4v16H5M15 4v16"/></svg>
+                Cortar fim
+              </button>
+              <button id="btn-dup" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                Duplicar
+              </button>
+              <button id="btn-move-left" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                Mover para trás
+              </button>
+              <button id="btn-move-right" class="tool-btn" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+                Mover para frente
+              </button>
+              <button id="btn-del" class="tool-btn danger" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 13h8l1-13"/></svg>
+                Apagar
+              </button>
+            </div>
+            <p class="hint">Dica: arraste as alças da direita/esquerda do clipe selecionado para cortar. Mantenha premido num clipe para o reordenar.</p>
+          </div>
+        </div>
+
+        <!-- Painel: Velocidade -->
+        <div class="panel" id="panel-speed">
+          <div class="panel-pad">
+            <div class="row"><label for="speed-range">Velocidade</label><output id="speed-val">1.00x</output></div>
+            <input type="range" id="speed-range" min="0.25" max="4" step="0.05" value="1" disabled>
+            <div class="chips">
+              <button class="chip speed-chip" data-speed="0.25" type="button" disabled>0.25x</button>
+              <button class="chip speed-chip" data-speed="0.5" type="button" disabled>0.5x</button>
+              <button class="chip speed-chip active" data-speed="1" type="button" disabled>1x</button>
+              <button class="chip speed-chip" data-speed="2" type="button" disabled>2x</button>
+              <button class="chip speed-chip" data-speed="4" type="button" disabled>4x</button>
+              <button class="chip" id="btn-reverse" type="button" disabled>
+                <svg viewBox="0 0 24 24" class="ic"><path d="M4 4v16M20 4l-12 8 12 8z"/></svg>
+                Reverso
+              </button>
+            </div>
+            <div class="row row-toggle">
+              <label for="btn-ramp-toggle">Speed ramp</label>
+              <button id="btn-ramp-toggle" class="switch" type="button" role="switch" aria-checked="false" disabled><span class="knob"></span></button>
+            </div>
+            <div class="chips" id="ramp-presets">
+              <button class="chip ramp-chip" data-ramp="smooth" type="button" disabled>Suave</button>
+              <button class="chip ramp-chip" data-ramp="up" type="button" disabled>Acelerar</button>
+              <button class="chip ramp-chip" data-ramp="down" type="button" disabled>Desacelerar</button>
+              <button class="chip ramp-chip" data-ramp="custom" type="button" disabled>Personalizado</button>
+            </div>
+            <div id="ramp-sliders" class="hidden">
+              <div class="row"><label>Curva personalizada</label></div>
+              <div class="ramp-row"><span class="ramp-lab">0%</span><input type="range" class="ramp-range" data-idx="0" min="0.25" max="4" step="0.05" value="1"><output>1.0x</output></div>
+              <div class="ramp-row"><span class="ramp-lab">33%</span><input type="range" class="ramp-range" data-idx="1" min="0.25" max="4" step="0.05" value="1"><output>1.0x</output></div>
+              <div class="ramp-row"><span class="ramp-lab">66%</span><input type="range" class="ramp-range" data-idx="2" min="0.25" max="4" step="0.05" value="1"><output>1.0x</output></div>
+              <div class="ramp-row"><span class="ramp-lab">100%</span><input type="range" class="ramp-range" data-idx="3" min="0.25" max="4" step="0.05" value="1"><output>1.0x</output></div>
+            </div>
+            <p class="hint">Câmara lenta: use 0.5x ou 0.25x. O speed ramp altera a velocidade ao longo do clipe. Cada clipe tem as suas definições.</p>
+          </div>
+        </div>
+
+        <!-- Painel: Efeitos -->
+        <div class="panel" id="panel-fx">
+          <div class="panel-pad">
+            <div class="fx-grid" id="fx-grid"></div>
+            <div id="fx-active"></div>
+            <p class="hint">Toque para ativar/desativar. Ajuste a intensidade de cada efeito ativo. Pode combinar vários efeitos.</p>
+          </div>
+        </div>
+
+        <!-- Painel: Áudio -->
+        <div class="panel" id="panel-audio">
+          <div class="panel-pad">
+            <div class="row"><label for="clip-vol">Volume do clipe</label><output id="clip-vol-val">100%</output></div>
+            <input id="clip-vol" type="range" min="0" max="1.5" step="0.01" value="1" disabled>
+            <div class="chips">
+              <button id="btn-clip-mute" class="chip" type="button" disabled>Silenciar clipe</button>
+            </div>
+            <div class="sep"></div>
+            <div class="row"><label for="master-vol">Volume geral</label><output id="master-vol-val">100%</output></div>
+            <input id="master-vol" type="range" min="0" max="1.5" step="0.01" value="1">
+            <div class="sep"></div>
+            <div class="row"><label>Música de fundo</label><button id="btn-music" class="chip" type="button">Escolher música</button></div>
+            <div id="music-info" class="sel-meta">Sem música carregada.</div>
+            <div id="music-controls" class="hidden">
+              <div class="row"><label for="music-vol">Volume da música</label><output id="music-vol-val">80%</output></div>
+              <input id="music-vol" type="range" min="0" max="1.5" step="0.01" value="0.8">
+              <div class="row"><label for="music-off">Sincronização</label><output id="music-off-val">0.0 s</output></div>
+              <input id="music-off" type="range" min="-10" max="10" step="0.1" value="0">
+              <div class="chips">
+                <button id="btn-music-mute" class="chip" type="button">Silenciar música</button>
+                <button id="btn-music-remove" class="chip danger" type="button">Remover música</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+</div>
+
+<!-- ===== Modal de exportação ===== -->
+<div id="export-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>Exportar vídeo</h2>
+      <button id="btn-export-close" class="icon-btn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div class="panel-pad">
+      <div class="row"><label>Resolução</label></div>
+      <div class="chips" id="res-chips">
+        <button class="chip res-chip" data-h="480" type="button">480p</button>
+        <button class="chip res-chip active" data-h="720" type="button">720p HD</button>
+        <button class="chip res-chip" data-h="1080" type="button">1080p</button>
+      </div>
+      <div class="row"><label>Imagens por segundo</label></div>
+      <div class="chips" id="fps-chips">
+        <button class="chip fps-chip" data-fps="24" type="button">24 fps</button>
+        <button class="chip fps-chip active" data-fps="30" type="button">30 fps</button>
+      </div>
+      <div id="export-info" class="sel-meta"></div>
+      <div id="export-progress-wrap" class="hidden">
+        <div class="progress"><div id="export-progress"></div></div>
+        <div id="export-status" class="sel-meta">A preparar…</div>
+      </div>
+      <button id="btn-export-start" class="btn btn-primary btn-big" type="button">Começar exportação</button>
+      <a id="btn-download" class="btn btn-primary btn-big hidden" download>Baixar vídeo</a>
+      <button id="btn-share" class="btn btn-ghost btn-big hidden" type="button">Partilhar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<input type="file" id="video-input" accept="video/*" multiple hidden>
+<input type="file" id="camera-input" accept="video/*" capture="environment" hidden>
+<input type="file" id="music-input" accept="audio/*" hidden>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

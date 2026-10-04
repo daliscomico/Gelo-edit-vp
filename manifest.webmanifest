@@ -1,0 +1,19 @@
+{
+  "name": "Gelo Edit VP",
+  "short_name": "GeloEdit",
+  "description": "Editor de vídeo web para Android: corte, velocidade, efeitos, áudio e exportação.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0e13",
+  "theme_color": "#0b0e13",
+  "icons": [
+    {
+      "src": "icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
